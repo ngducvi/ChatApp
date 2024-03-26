@@ -187,7 +187,7 @@ const Chats = ({ navigation }) => {
                                             marginRight: 22,
                                         }}
                                         onPress={() =>
-                                            navigation.navigate('Addcontacts', {
+                                            navigation.navigate('PersonalChat', {
                                                 userName: item.userName,
                                             })
                                         }
