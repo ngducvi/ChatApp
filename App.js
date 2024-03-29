@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity } from "react-native";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -10,7 +10,7 @@ import Tabnavigation from "./navigation/Tabnavigation";
 import PersonalChat from "./screens/PersonalChat";
 import ProfileFriend from "./screens/ProfileFriend";
 import Addcontacts from "./screens/Addcontacts";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import store from "./store/index";
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +24,7 @@ export default function App() {
           <Stack.Screen name="Loginscrean" component={Loginscrean} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
           <Stack.Screen name="ProfileAccount" component={ProfileAccount} options={{ headerShown: false }} />
-          <Stack.Screen name="Tabnavigation" component={Tabnavigation} options={{ headerShown: false }} />
+          <Stack.Screen name="Tabnavigation" component={Tabnavigation} options={{ headerShown: false, gestureEnabled: false }} />
           <Stack.Screen name="PersonalChat" component={PersonalChat} options={{ headerShown: false }} />
           <Stack.Screen name="ProfileFriend" component={ProfileFriend} options={{ headerShown: false }} />
           <Stack.Screen name="Addcontacts" component={Addcontacts} options={{ headerShown: false }} />
@@ -33,9 +33,15 @@ export default function App() {
     </Provider>
   );
 }
+
 function WelcomeScreen() {
   const navigation = useNavigation();
-
+  const { authenticate } = useSelector((state) => state.auth);
+  useEffect(() => {
+    if (authenticate) {
+      navigation.navigate("Tabnavigation");
+    }
+  }, []);
   return (
     <SafeAreaView>
       <View>

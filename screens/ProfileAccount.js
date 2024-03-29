@@ -1,22 +1,19 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  Image,
-  TouchableOpacity,
-  input,
-  TextInput,
-  title,
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity, input, TextInput, title } from "react-native";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import PageContainer from "./../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import { AntDesign } from "@expo/vector-icons";
 import Infomation from "../components/Infomation";
+import { useDispatch } from "react-redux";
+import { userLogout } from "../store/actions/authAction";
 
 const ProfileAccount = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const logout = () => {
+    dispatch(userLogout());
+    navigation.navigate("/");
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
@@ -70,19 +67,12 @@ const ProfileAccount = ({ navigation }) => {
           <Infomation>
             <TextInput placeholder="Name" style={styles.input} value="Ducvi" />
 
-            <TextInput
-              placeholder="Ngày sinh"
-              style={styles.input}
-              value="14/09"
-            />
+            <TextInput placeholder="Ngày sinh" style={styles.input} value="14/09" />
             <TextInput placeholder="Email" style={styles.input} value="sdfs" />
           </Infomation>
         </View>
         <View style={styles.containerbutton}>
-          <TouchableOpacity
-            style={styles.button1}
-            onPress={() => navigation.navigate("/")}
-          >
+          <TouchableOpacity style={styles.button1} onPress={logout}>
             <Text style={styles.buttonText}>Đăng xuất</Text>
           </TouchableOpacity>
         </View>
@@ -112,7 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(220, 220, 220, 1)",
     borderRadius: 13,
     marginVertical: 3,
-    marginTop:12
+    marginTop: 12,
   },
   containerbutton: {
     marginTop: 10,

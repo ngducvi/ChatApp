@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LOGIN_FAIL, LOGIN_SUCCESS, REGISTER_FAIL, REGISTER_SUCCESS } from "../types/authType";
+import { LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, REGISTER_FAIL, REGISTER_SUCCESS } from "../types/authType";
 import deCodeToken from "jwt-decode";
 
 const authState = {
@@ -60,6 +60,14 @@ export const authReducer = (state = authState, action) => {
       error: "",
       authenticate: true,
       loading: false,
+    };
+  }
+  if (type === LOGOUT_SUCCESS) {
+    return {
+      ...state,
+      authenticate: false,
+      successMessage: "Đăng xuất thành công",
+      myInfo: "",
     };
   }
   return state;

@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text } from "react-native";
 import { FontAwesome, Feather, Ionicons } from "@expo/vector-icons";
 import Chats from "../screens/Chats";
 import Contacts from "../screens/Contacts";
 import More from "../screens/More";
+import { useDispatch, useSelector } from "react-redux";
+import { getFriends, getGroups } from "../store/actions/messengerAction";
 
 const black = "#000000";
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigation() {
+  const dispatch = useDispatch();
+  const { myInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getFriends(myInfo.id));
+    dispatch(getGroups());
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -25,11 +35,11 @@ export default function TabNavigation() {
           elevation: 0,
           height: 70,
           width: "400px",
-          
         },
       }}
     >
-      <Tab.Screen style={{maginTop: 30}}
+      <Tab.Screen
+        style={{ maginTop: 30 }}
         name="Contacts"
         component={Contacts}
         options={{
@@ -51,10 +61,10 @@ export default function TabNavigation() {
                     >
                       Contacts
                     </Text>
-                    <FontAwesome  name="circle" size={8} color="#000000" />
+                    <FontAwesome name="circle" size={8} color="#000000" />
                   </>
                 ) : (
-                  <Feather  name="users" size={24} color="black" />
+                  <Feather name="users" size={24} color="black" />
                 )}
               </View>
             );
@@ -87,7 +97,7 @@ export default function TabNavigation() {
                     <FontAwesome name="circle" size={8} color={black} />
                   </>
                 ) : (
-                  <Ionicons  name="chatbubble-outline" size={24} color={black} />
+                  <Ionicons name="chatbubble-outline" size={24} color={black} />
                 )}
               </View>
             );

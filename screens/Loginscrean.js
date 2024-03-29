@@ -16,6 +16,7 @@ export default function Loginscrean() {
   useEffect(() => {
     if (authenticate) {
       navigation.navigate("Tabnavigation");
+      // console.log(myInfo);
     }
   }, [successMessage]);
   const dismissKeyboard = () => {

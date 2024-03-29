@@ -1,6 +1,6 @@
 import { API_URL } from "../../environment/developer";
 import axios from "axios";
-import { LOGIN_FAIL, LOGIN_SUCCESS, REGISTER_FAIL, REGISTER_SUCCESS } from "../types/authType";
+import { LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, REGISTER_FAIL, REGISTER_SUCCESS } from "../types/authType";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const userRegister = (data) => {
@@ -62,4 +62,13 @@ export const userLogin = (data) => {
       });
     }
   };
+};
+
+export const userLogout = () => async (dispatch) => {
+  try {
+    await AsyncStorage.removeItem("authToken");
+    dispatch({ type: LOGOUT_SUCCESS });
+  } catch (error) {
+    console.log(error);
+  }
 };
