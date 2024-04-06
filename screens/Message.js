@@ -11,6 +11,13 @@ const Message = ({ route }) => {
     { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
     { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
     { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
+
   ];
 
   const myInfo = {
@@ -22,7 +29,7 @@ const Message = ({ route }) => {
         const isMyMessage = m.senderId === myInfo.id;
         return (
           <View
-            key={m._id}
+            key={index} // Sử dụng index của mảng làm key
             style={[
               styles.messageContainer,
               isMyMessage ? styles.myMessageContainer : styles.friendMessageContainer,
@@ -44,17 +51,19 @@ const Message = ({ route }) => {
       })}
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor:"white",
     padding: 10,
+    borderRadius: 10,
   },
   messageContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 9,
     maxWidth: "95%",
 
   },

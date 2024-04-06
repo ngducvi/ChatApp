@@ -73,7 +73,6 @@ const MessageSend = ({
         <FontAwesome name="gift" size={24} color="black" />
       </View>
 
-   
       <View style={styles.messageType}>
         <TextInput
           style={styles.formControl}
@@ -96,10 +95,10 @@ const MessageSend = ({
       {showEmoji && (
         <View style={styles.emojiSection}>
           <View style={styles.emoji}>
-            {emojis.map((e, i) => (
+            {emojis.map((e) => (
               <TouchableOpacity
-                key={i}
-                onPress={() => handleEmojiPress(e)} // Pass selected emoji to handleEmojiPress function
+                key={e} // Using emoji character as key
+                onPress={() => handleEmojiPress(e)}
               >
                 <Text>{e}</Text>
               </TouchableOpacity>
@@ -114,7 +113,7 @@ const MessageSend = ({
 export default MessageSend;
 
 const styles = {
-  messageSendSection: { 
+  messageSendSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

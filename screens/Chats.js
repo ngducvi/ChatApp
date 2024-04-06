@@ -65,7 +65,7 @@ const Chats = ({ navigation }) => {
       </View>
       <View style={{ flexDirection: "column" }}>
         <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username || item.fndInfo?.name}</Text>
-        <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.message?.text.substring(0, 20) || "Đã gửi 1 file"}    <Text style={{ ...FONTS.h5, marginBottom: 4 }}>{item.msgInfo && item.msgInfo.message ? moment(item.msgInfo.createdAt).startOf("mini").fromNow() : ""}</Text></Text>
+        <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.message?.text.substring(0, 20) || "Đã gửi 1 file"} <Text style={{ ...FONTS.h5, marginBottom: 4 }}>{item.msgInfo && item.msgInfo.message ? moment(item.msgInfo.createdAt).startOf("mini").fromNow() : ""}</Text></Text>
         
       </View>
     </TouchableOpacity>

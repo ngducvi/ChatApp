@@ -50,7 +50,7 @@ function WelcomeScreen() {
             fontSize: 38,
             textAlign: "center",
             marginTop: 30,
-            fontFamily: "Roboto",
+            fontFamily: "Helvetica",
             fontWeight: "bold",
             marginBottom: 30,
           }}
