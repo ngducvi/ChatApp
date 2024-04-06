@@ -15,8 +15,10 @@ import PageContainer from "./../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import { AntDesign } from "@expo/vector-icons";
 import Infomation from "../components/Infomation";
-
-const ProfileFriend = ({ navigation }) => {
+import { useDispatch, useSelector } from "react-redux";
+const ProfileFriend = ({ navigation, route }) => {
+  const { friends } = useSelector((state) => state.messenger);
+  const { friendName, friendEmail, friendImage } = route.params;
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
@@ -47,20 +49,22 @@ const ProfileFriend = ({ navigation }) => {
               marginLeft: 30,
             }}
           >
-            <AntDesign name="user" size={60} color="#111"></AntDesign>
-            <View
+            <Image
               style={{
+                width: "100%",
+                height: "100%",
                 position: "absolute",
-                bottom: 0,
-                right: 0,
+                borderRadius: 50,
+                top: 0,
               }}
-            ></View>
+              source={{
+                uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${friendImage}`,
+              }}
+            />
           </View>
           <Infomation>
-            <Text style={styles.title}>Nanem</Text>
-            <Text style={styles.text}>Email</Text>
-            <Text style={styles.text}>Ngày sinh :</Text>
-            <Text style={styles.text}>Giới tính :</Text>
+            <Text style={styles.title}>{friendName}</Text>
+            <Text style={styles.text}>Email : {friendEmail}</Text>
           </Infomation>
         </View>
         <View style={styles.containerbutton}>
@@ -77,7 +81,6 @@ const ProfileFriend = ({ navigation }) => {
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.buttonText}>Block</Text>
-            
           </TouchableOpacity>
         </View>
       </PageContainer>

@@ -1,29 +1,42 @@
-import { View, Text, TouchableOpacity, TextInput, FlatList, Image } from "react-native";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import PageContainer from "../components/PageContainer";
+import { View, Text, TouchableOpacity, TextInput, FlatList, Image } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS, FONTS } from "../constants/theme";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { contacts } from "../constants/data";
-import { useSelector } from "react-redux";
-const Contacts = ({ navigation, route }) => {
+import { getFriends } from "../store/actions/messengerAction";
+
+const Contacts = ({ navigation }) => {
   const [search, setSearch] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState(contacts);
-  //   const { friends } = route?.params;
-  const { friends, requestAddFriend } = useSelector((state) => state.messenger);
- 
-  const handleSearch = (text) => {
+  const [searchResults, setSearchResults] = useState([]);
+  const dispatch = useDispatch();
+  const { friends } = useSelector((state) => state.messenger);
+
+  useEffect(() => {
+    dispatch(getFriends()); // Fetch friends data when component mounts
+  }, []);
+
+  const handleSearchUser = (text) => {
     setSearch(text);
-    const filteredData = contacts.filter((user) => user.userName.toLowerCase().includes(text.toLowerCase()));
-    setFilteredUsers(filteredData);
+    if (text) {
+      const results = friends.filter((fd) =>
+        fd.fndInfo && fd.fndInfo.username && fd.fndInfo.username.toLowerCase().includes(text.toLowerCase())
+      );
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
   };
+  
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      key={item.fndInfo._id}
       onPress={() =>
         navigation.navigate("PersonalChat", {
-          userName: item.userName,
+          friendId: item.fndInfo._id,
+          friendName: item.fndInfo.username,
+          friendImage: item.fndInfo.image,
+          friendEmail: item.fndInfo.email,
+          friendDob: item.fndInfo.dob,
         })
       }
       style={[
@@ -34,20 +47,11 @@ const Contacts = ({ navigation, route }) => {
           paddingHorizontal: 22,
           borderBottomColor: COLORS.secondaryWhite,
           borderBottomWidth: 1,
+          backgroundColor: index % 2 !== 0 ? COLORS.tertiaryWhite : null,
         },
-        index % 2 !== 0
-          ? {
-              backgroundColor: COLORS.tertiaryWhite,
-            }
-          : null,
       ]}
     >
-      <View
-        style={{
-          paddingVertical: 15,
-          marginRight: 22,
-        }}
-      >
+      <View style={{ paddingVertical: 15, marginRight: 22 }}>
         {item.isOnline && item.isOnline == true && (
           <View
             style={{
@@ -64,85 +68,45 @@ const Contacts = ({ navigation, route }) => {
             }}
           ></View>
         )}
-
         <Image
           source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${item.fndInfo.image}` }}
           resizeMode="contain"
-          style={{
-            height: 50,
-            width: 50,
-            borderRadius: 25,
-          }}
+          style={{ height: 50, width: 50, borderRadius: 25 }}
         />
       </View>
-      <View
-        style={{
-          flexDirection: "column",
-        }}
-      >
-        <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username}</Text>
-        <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.lastSeen}</Text>
+      <View style={{ flexDirection: "column" }}>
+      <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username || item.fndInfo?.name}</Text>
+      {/* <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.msgInfo.message?.text.substring(0, 20) || "Đã gửi 1 file"}</Text> */}
       </View>
     </TouchableOpacity>
   );
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <PageContainer>
-        <View style={{ flex: 1 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginHorizontal: 22,
-              marginTop: 22,
-            }}
-          >
-            <Text style={{ ...FONTS.h4, fontWeight: "bold" }}>Contacts</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Tabnavigation")}>
-              <AntDesign name="plus" size={20} color={COLORS.secondaryBlack} />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              marginHorizontal: 22,
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: COLORS.secondaryWhite,
-              height: 48,
-              marginVertical: 22,
-              paddingHorizontal: 12,
-              borderRadius: 20,
-            }}
-          >
-            <Ionicons name="search-outline" size={24} color={COLORS.black} />
-
-            <TextInput
-              style={{
-                width: "100%",
-                height: "100%",
-                marginHorizontal: 12,
-              }}
-              value={search}
-              onChangeText={handleSearch}
-              placeholder="Search contact..."
-            />
-          </View>
-
-          <View
-            style={{
-              paddingBottom: 100,
-            }}
-          >
-            <FlatList
-              data={friends.filter((fd) => fd.fndInfo.username).sort((a, b) => a.fndInfo.username.toLowerCase() > b.fndInfo.username.toLowerCase())}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.fndInfo._id.toString()}
-            />
-          </View>
-        </View>
-      </PageContainer>
-    </SafeAreaView>
+    <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginHorizontal: 22, marginTop: 22 }}>
+        <Text style={{ ...FONTS.h4, fontWeight: "bold" }}>Contacts</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Tabnavigation")}>
+          <AntDesign name="plus" size={20} color={COLORS.secondaryBlack} />
+        </TouchableOpacity>
+      </View>
+      <View style={{ marginHorizontal: 22, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.secondaryWhite, height: 48, marginVertical: 22, paddingHorizontal: 12, borderRadius: 20 }}>
+        <Ionicons name="search-outline" size={24} color={COLORS.black} />
+        <TextInput
+          style={{ width: "100%", height: "100%", marginHorizontal: 12 }}
+          value={search}
+          onChangeText={handleSearchUser}
+          placeholder="Search contact..."
+        />
+      </View>
+      <View style={{ paddingBottom: 100 }}>
+        <FlatList
+          // data={searchResults.length > 0 ? searchResults : friends.filter((fd) => fd.fndInfo.username)}
+          data={searchResults.length > 0 ? searchResults : friends}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.fndInfo._id.toString()}
+        />
+      </View>
+    </View>
   );
 };
 

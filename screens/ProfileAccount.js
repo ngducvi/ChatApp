@@ -1,18 +1,49 @@
 import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity, input, TextInput, title } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Image,
+  TouchableOpacity,
+  input,
+  TextInput,
+  title,
+} from "react-native";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import PageContainer from "./../components/PageContainer";
 import PageTitle from "../components/PageTitle";
 import { AntDesign } from "@expo/vector-icons";
 import Infomation from "../components/Infomation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userLogout } from "../store/actions/authAction";
+import { format } from "date-fns";
+import * as ImagePicker from "expo-image-picker";
 
 const ProfileAccount = ({ navigation }) => {
+  const { loading, authenticate, error, successMessage, myInfo } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
   const logout = () => {
     dispatch(userLogout());
     navigation.navigate("/");
+  };
+  const openImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditting: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage({
+        uri: result.assets[0].uri,
+        type: result.assets[0].mimeType,
+        name: result.assets[0].fileName,
+      });
+      setImageSource(result.assets[0].uri);
+    }
   };
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -50,7 +81,12 @@ const ProfileAccount = ({ navigation }) => {
               marginTop: 150,
             }}
           >
-            <AntDesign name="user" size={60} color="#111"></AntDesign>
+            <Image
+              style={{ width: 100, height: 100 ,borderRadius: 50}}
+              source={{
+                uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${myInfo.image}`,
+              }}
+            />
             <View
               style={{
                 position: "absolute",
@@ -59,16 +95,29 @@ const ProfileAccount = ({ navigation }) => {
               }}
             >
               <TouchableOpacity>
-                <AntDesign name="pluscircle" size={30} color="gray"></AntDesign>
+                <AntDesign name="pluscircle" onPress={openImagePicker} size={30} color="gray"></AntDesign>
               </TouchableOpacity>
             </View>
           </View>
           <View style={{ marginTop: 20 }}></View>
           <Infomation>
-            <TextInput placeholder="Name" style={styles.input} value="Ducvi" />
+            <TextInput
+              placeholder="Name"
+              style={styles.input}
+              value={myInfo.username}
+            />
 
-            <TextInput placeholder="Ngày sinh" style={styles.input} value="14/09" />
-            <TextInput placeholder="Email" style={styles.input} value="sdfs" />
+            <TextInput
+              placeholder="Ngày sinh"
+              style={styles.input}
+              value={format(new Date(myInfo.birthday), "dd/MM/yyyy")}
+            />
+
+            <TextInput
+              placeholder="Email"
+              style={styles.input}
+              value={myInfo.email}
+            />
           </Infomation>
         </View>
         <View style={styles.containerbutton}>

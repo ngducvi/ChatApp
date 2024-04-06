@@ -1,27 +1,33 @@
 import { View, Text, TouchableOpacity, Image, TextInput, FlatList } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PageContainer from "../components/PageContainer";
 import { MaterialCommunityIcons, AntDesign, Ionicons } from "@expo/vector-icons";
 import { FONTS, COLORS } from "../constants/theme";
 import { contacts } from "../constants/data";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getFriends } from "../store/actions/messengerAction";
 
 const Chats = ({ navigation }) => {
   const [search, setSearch] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState(contacts);
-  const { friends, requestAddFriend } = useSelector((state) => state.messenger);
+  const [searchResults, setSearchResults] = useState([]);
+  const dispatch = useDispatch();
+  const { friends } = useSelector((state) => state.messenger);
 
-  const handleSearch = (text) => {
-    setSearch(text);
-    const filteredData = contacts.filter((user) => user.userName.toLowerCase().includes(text.toLowerCase()));
-    setFilteredUsers(filteredData);
-  };
+  useEffect(() => {
+    dispatch(getFriends()); // Fetch friends data when component mounts
+  }, []);
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      key={index}
-      onPress={() => navigation.navigate("PersonalChat", { currentFriend: item.fndInfo })}
+      onPress={() =>
+        navigation.navigate("PersonalChat", {
+          friendId: item.fndInfo._id,
+          friendName: item.fndInfo.username,
+          friendImage: item.fndInfo.image,
+        })
+      }
       style={[
         {
           width: "100%",
@@ -30,20 +36,11 @@ const Chats = ({ navigation }) => {
           paddingHorizontal: 22,
           borderBottomColor: COLORS.secondaryWhite,
           borderBottomWidth: 1,
+          backgroundColor: index % 2 !== 0 ? COLORS.tertiaryWhite : null,
         },
-        index % 2 !== 0
-          ? {
-              backgroundColor: COLORS.tertiaryWhite,
-            }
-          : null,
       ]}
     >
-      <View
-        style={{
-          paddingVertical: 15,
-          marginRight: 22,
-        }}
-      >
+      <View style={{ paddingVertical: 15, marginRight: 22 }}>
         {item.isOnline && item.isOnline == true && (
           <View
             style={{
@@ -60,27 +57,20 @@ const Chats = ({ navigation }) => {
             }}
           ></View>
         )}
-
         <Image
           source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${item.fndInfo.image}` }}
           resizeMode="contain"
-          style={{
-            height: 50,
-            width: 50,
-            borderRadius: 25,
-          }}
+          style={{ height: 50, width: 50, borderRadius: 25 }}
         />
       </View>
-      <View
-        style={{
-          flexDirection: "column",
-        }}
-      >
+      <View style={{ flexDirection: "column" }}>
         <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username || item.fndInfo?.name}</Text>
-        <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.msgInfo.message?.text.substring(0, 20) || "Đã gửi 1 file"}</Text>
+        <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.message?.text.substring(0, 20) || "Đã gửi 1 file"}    <Text style={{ ...FONTS.h5, marginBottom: 4 }}>{item.msgInfo && item.msgInfo.message ? moment(item.msgInfo.createdAt).startOf("mini").fromNow() : ""}</Text></Text>
+        
       </View>
     </TouchableOpacity>
   );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>

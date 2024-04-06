@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {  Image,View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PageContainer from "../components/PageContainer";
@@ -7,9 +7,11 @@ import ProfileAccount from "../screens/ProfileAccount";
 import { useNavigation } from "@react-navigation/native";
 import Chats from "../screens/Chats";
 import { AntDesign, MaterialIcons, MaterialCommunityIcons, Ionicons, Entypo } from "@expo/vector-icons";
-
+import {useSelector} from "react-redux";
 const More = () => {
   const navigation = useNavigation();
+  const { loading, authenticate, error, successMessage, myInfo } = useSelector((state) => state.auth);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <PageContainer>
@@ -42,7 +44,12 @@ const More = () => {
               justifyContent: "center",
             }}
           >
-            <AntDesign name="user" size={24} color={COLORS.black} />
+           <Image
+              style={{ width: 70, height: 70 ,borderRadius: 50}}
+              source={{
+                uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${myInfo.image}`,
+              }}
+            />
           </View>
           <View
             style={{
@@ -50,7 +57,7 @@ const More = () => {
               marginHorizontal: 22,
             }}
           >
-            <Text style={{ ...FONTS.h4, marginVertical: 6 }}>Nguyen Duc Vi</Text>
+            <Text style={{ ...FONTS.h4, marginVertical: 6 }}>{myInfo.username}</Text>
           </View>
           <TouchableOpacity
             onPress={() => {
