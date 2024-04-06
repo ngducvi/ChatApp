@@ -8,12 +8,13 @@ import { getFriends } from "../store/actions/messengerAction";
 const Contacts = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const dispatch = useDispatch();
-  const { friends } = useSelector((state) => state.messenger);
+  const { friends } = useSelector((state) => state.messenger); // Destructure friends from redux state
 
   useEffect(() => {
     dispatch(getFriends()); // Fetch friends data when component mounts
   }, []);
+
+  const dispatch = useDispatch();
 
   const handleSearchUser = (text) => {
     setSearch(text);
@@ -26,7 +27,6 @@ const Contacts = ({ navigation }) => {
       setSearchResults([]);
     }
   };
-  
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
@@ -100,7 +100,6 @@ const Contacts = ({ navigation }) => {
       </View>
       <View style={{ paddingBottom: 100 }}>
         <FlatList
-          // data={searchResults.length > 0 ? searchResults : friends.filter((fd) => fd.fndInfo.username)}
           data={searchResults.length > 0 ? searchResults : friends}
           renderItem={renderItem}
           keyExtractor={(item) => item.fndInfo._id.toString()}

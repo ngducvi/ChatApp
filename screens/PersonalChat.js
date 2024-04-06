@@ -23,7 +23,8 @@ const PersonalChat = ({ navigation, route }) => {
   const { message, members, messageSendSuccess, messageGetSuccess } =
     useSelector((state) => state.messenger);
 
-  const { friendId, friendName, friendImage,friendEmail,friendDob } = route.params;
+  const { friendId, friendName, friendImage, friendEmail, friendDob } =
+    route.params;
   const { currentFriend } = route.params;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -130,7 +131,8 @@ const PersonalChat = ({ navigation, route }) => {
         </View>
 
         <ScrollView style={{ flex: 1 }}>
-          <Message />
+        <Message route={route} />
+
         </ScrollView>
 
         <View style={{ padding: 5, marginBottom: 13 }}>
