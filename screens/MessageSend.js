@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
-const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, imageSend }) => {
+const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, imageSend, openImagePicker }) => {
   const [showEmoji, setShowEmoji] = useState(false);
   const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "😝", "😜", "🧐", "🤓", "😎", "😕", "🤑", "🥴", "😱"];
 
@@ -25,10 +25,10 @@ const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, im
       </View>
 
       <View style={styles.file}>
-        <TouchableOpacity onPress={imageSend}>
+        <TouchableOpacity onPress={openImagePicker}>
           <FontAwesome name="image" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={imageSend}></TouchableOpacity>
+        {/* <TouchableOpacity onPress={imageSend}></TouchableOpacity> */}
       </View>
 
       <View style={styles.file}>

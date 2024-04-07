@@ -7,8 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, SIZES, FONTS } from "../constants/theme";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { getMessage, getMessageGroup, messageSend } from "../store/actions/messengerAction";
-import { getFriends } from "../store/actions/messengerAction";
+import { getMessage, getMessageGroup, imageMessageSend, messageSend } from "../store/actions/messengerAction";
+import * as ImagePicker from "expo-image-picker";
 const PersonalChat = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { message, members, messageSendSuccess, messageGetSuccess } = useSelector((state) => state.messenger);
@@ -17,6 +17,7 @@ const PersonalChat = ({ navigation, route }) => {
   const { currentFriend } = route.params;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const { myInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (currentFriend?.username) {
@@ -26,14 +27,47 @@ const PersonalChat = ({ navigation, route }) => {
     }
   }, [currentFriend?._id]);
 
-  const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
-  }, []);
-
-  const { myInfo } = useSelector((state) => state.auth);
-
   const inputHandle = (text) => {
     setNewMessage(text);
+  };
+
+  const openImagePicker = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditting: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const maxSizeInBytes = 50 * 1024 * 1024; //50mb
+      if (result.assets[0].fileSize > maxSizeInBytes) {
+        alert("Dung lượng tệp tin không được vượt quá 50MB.");
+        return;
+      }
+      const imageName = result.assets[0].fileName;
+      const newImageName = Date.now() + imageName;
+      let formData = new FormData();
+      if (currentFriend.username) {
+        formData.append("senderName", myInfo.username);
+        formData.append("imageName", newImageName);
+        formData.append("receiverId", currentFriend._id);
+        formData.append("image", {
+          uri: result.assets[0].uri,
+          type: result.assets[0].mimeType,
+          name: result.assets[0].fileName,
+        });
+      } else {
+        formData.append("senderName", myInfo.username);
+        formData.append("imageName", newImageName);
+        formData.append("groupId", currentFriend._id);
+        formData.append("image", {
+          uri: result.assets[0].uri,
+          type: result.assets[0].mimeType,
+          name: result.assets[0].fileName,
+        });
+      }
+      dispatch(imageMessageSend(formData));
+    }
   };
 
   const sendMessage = () => {
@@ -119,7 +153,7 @@ const PersonalChat = ({ navigation, route }) => {
         </ScrollView>
 
         <View style={{ padding: 5, marginBottom: 13 }}>
-          <MessageSend newMessage={newMessage} inputHandle={inputHandle} sendMessage={sendMessage} handleEmojiSend={handleEmojiSend} />
+          <MessageSend newMessage={newMessage} inputHandle={inputHandle} sendMessage={sendMessage} handleEmojiSend={handleEmojiSend} openImagePicker={openImagePicker} />
         </View>
       </View>
     </KeyboardAvoidingView>

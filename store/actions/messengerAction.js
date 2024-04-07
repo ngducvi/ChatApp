@@ -49,6 +49,28 @@ export const messageSend = (data) => async (dispatch) => {
   }
 };
 
+export const imageMessageSend = (data) => async (dispatch) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    if (token) {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(`${API_URL}/api/image-message-send`, data, config);
+      dispatch({
+        type: MESSAGE_SEND_SUCCESS,
+        payload: {
+          message: response.data.message,
+        },
+      });
+    }
+  } catch (error) {
+    console.log(error.response.data);
+  }
+};
+
 export const getGroups = () => async (dispatch) => {
   try {
     const token = await AsyncStorage.getItem("authToken");
