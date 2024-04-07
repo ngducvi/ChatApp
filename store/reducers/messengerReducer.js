@@ -44,6 +44,13 @@ export const messengerReducer = (state = messengerState, action) => {
       friends: [...state.friends, ...payload.groups].sort((a, b) => new Date(b.msgInfo.createdAt) - new Date(a.msgInfo.createdAt)),
     };
   }
+  if (type === MESSAGE_SEND_SUCCESS) {
+    return {
+      ...state,
+      message: [...state.message, payload.message],
+      messageSendSuccess: true,
+    };
+  }
   if (type === LOGOUT_SUCCESS) {
     return {
       friends: [],

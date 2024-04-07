@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
-const Message = ({ route }) => {
+const Message = ({ message }) => {
   // Dữ liệu tin nhắn ảo test
   const messages = [
     { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
@@ -17,33 +18,20 @@ const Message = ({ route }) => {
     { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
     { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
     { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-
   ];
 
-  const myInfo = {
-    id: 1, 
-  };
+  const { myInfo } = useSelector((state) => state.auth);
   return (
     <View style={styles.container}>
-      {messages.map((m, index) => {
+      {message.map((m, index) => {
         const isMyMessage = m.senderId === myInfo.id;
         return (
           <View
             key={index} // Sử dụng index của mảng làm key
-            style={[
-              styles.messageContainer,
-              isMyMessage ? styles.myMessageContainer : styles.friendMessageContainer,
-            ]}
+            style={[styles.messageContainer, isMyMessage ? styles.myMessageContainer : styles.friendMessageContainer]}
           >
             <View style={styles.messageContent}>
-              <Text
-                style={[
-                  styles.messageText,
-                  isMyMessage ? styles.myMessageText : styles.friendMessageText,
-                ]}
-              >
-                {m.message.text}
-              </Text>
+              <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.friendMessageText]}>{m.message.text}</Text>
               <Text style={styles.timestamp}>{moment(m.createdAt).format("HH:mm")}</Text>
             </View>
           </View>
@@ -51,12 +39,11 @@ const Message = ({ route }) => {
       })}
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:"white",
+    backgroundColor: "white",
     padding: 10,
     borderRadius: 10,
   },
@@ -65,7 +52,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 9,
     maxWidth: "95%",
-
   },
   messageContent: {
     maxWidth: "100%",

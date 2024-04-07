@@ -10,18 +10,16 @@ const Contacts = ({ navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const { friends } = useSelector((state) => state.messenger); // Destructure friends from redux state
 
-  useEffect(() => {
-    dispatch(getFriends()); // Fetch friends data when component mounts
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getFriends()); // Fetch friends data when component mounts
+  // }, []);
 
   const dispatch = useDispatch();
 
   const handleSearchUser = (text) => {
     setSearch(text);
     if (text) {
-      const results = friends.filter((fd) =>
-        fd.fndInfo && fd.fndInfo.username && fd.fndInfo.username.toLowerCase().includes(text.toLowerCase())
-      );
+      const results = friends.filter((fd) => fd.fndInfo && fd.fndInfo.username && fd.fndInfo.username.toLowerCase().includes(text.toLowerCase()));
       setSearchResults(results);
     } else {
       setSearchResults([]);
@@ -32,11 +30,7 @@ const Contacts = ({ navigation }) => {
     <TouchableOpacity
       onPress={() =>
         navigation.navigate("PersonalChat", {
-          friendId: item.fndInfo._id,
-          friendName: item.fndInfo.username,
-          friendImage: item.fndInfo.image,
-          friendEmail: item.fndInfo.email,
-          friendDob: item.fndInfo.dob,
+          currentFriend: item.fndInfo,
         })
       }
       style={[
@@ -68,15 +62,11 @@ const Contacts = ({ navigation }) => {
             }}
           ></View>
         )}
-        <Image
-          source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${item.fndInfo.image}` }}
-          resizeMode="contain"
-          style={{ height: 50, width: 50, borderRadius: 25 }}
-        />
+        <Image source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${item.fndInfo.image}` }} resizeMode="contain" style={{ height: 50, width: 50, borderRadius: 25 }} />
       </View>
       <View style={{ flexDirection: "column" }}>
-      <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username || item.fndInfo?.name}</Text>
-      {/* <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.msgInfo.message?.text.substring(0, 20) || "Đã gửi 1 file"}</Text> */}
+        <Text style={{ ...FONTS.h4, marginBottom: 4 }}>{item.fndInfo?.username || item.fndInfo?.name}</Text>
+        {/* <Text style={{ fontSize: 14, color: COLORS.secondaryGray }}>{item.msgInfo.message?.text.substring(0, 20) || "Đã gửi 1 file"}</Text> */}
       </View>
     </TouchableOpacity>
   );
@@ -89,21 +79,14 @@ const Contacts = ({ navigation }) => {
           <AntDesign name="plus" size={20} color={COLORS.secondaryBlack} />
         </TouchableOpacity>
       </View>
-      <View style={{ marginHorizontal: 22, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.secondaryWhite, height: 48, marginVertical: 22, paddingHorizontal: 12, borderRadius: 20 }}>
+      <View
+        style={{ marginHorizontal: 22, flexDirection: "row", alignItems: "center", backgroundColor: COLORS.secondaryWhite, height: 48, marginVertical: 22, paddingHorizontal: 12, borderRadius: 20 }}
+      >
         <Ionicons name="search-outline" size={24} color={COLORS.black} />
-        <TextInput
-          style={{ width: "100%", height: "100%", marginHorizontal: 12 }}
-          value={search}
-          onChangeText={handleSearchUser}
-          placeholder="Search contact..."
-        />
+        <TextInput style={{ width: "100%", height: "100%", marginHorizontal: 12 }} value={search} onChangeText={handleSearchUser} placeholder="Search contact..." />
       </View>
       <View style={{ paddingBottom: 100 }}>
-        <FlatList
-          data={searchResults.length > 0 ? searchResults : friends}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.fndInfo._id.toString()}
-        />
+        <FlatList data={searchResults.length > 0 ? searchResults : friends} renderItem={renderItem} keyExtractor={(item) => item.fndInfo._id.toString()} />
       </View>
     </View>
   );
