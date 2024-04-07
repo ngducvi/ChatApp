@@ -1,87 +1,106 @@
+
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
-const Message = ({ message }) => {
-  // Dữ liệu tin nhắn ảo test
-  const messages = [
-    { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
-    { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
-    { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
-    { _id: 1, senderId: 1, message: { text: "Hello", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-    { _id: 2, senderId: 2, message: { text: "Hi there!", image: "" }, createdAt: new Date() },
-  ];
-
+const Message = ({ message, currentFriend }) => {
   const { myInfo } = useSelector((state) => state.auth);
+  const imageRegex = /\.(jpg|jpeg|png|gif|bmp)$/;
+
   return (
-    <View style={styles.container}>
-      {message.map((m, index) => {
-        const isMyMessage = m.senderId === myInfo.id;
-        return (
-          <View
-            key={index} // Sử dụng index của mảng làm key
-            style={[styles.messageContainer, isMyMessage ? styles.myMessageContainer : styles.friendMessageContainer]}
-          >
-            <View style={styles.messageContent}>
-              <Text style={[styles.messageText, isMyMessage ? styles.myMessageText : styles.friendMessageText]}>{m.message.text}</Text>
-              <Text style={styles.timestamp}>{moment(m.createdAt).format("HH:mm")}</Text>
-            </View>
+    <View>
+      {message.map((m, index) => (
+        // Kiểm tra xem tin nhắn này có phải từ người dùng hiện tại không
+        m.senderId === myInfo.id ? (
+          // Nếu tin nhắn từ người dùng hiện tại, hiển thị tin nhắn của họ
+          <View key={m._id} style={styles.myMessage}>
+            {m.message.text === "" ? (
+              imageRegex.test(m.message.image) ? (
+                console.log("URL của hình ảnh:", m.message.image),
+                <Image style={styles.image} source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${m.message.image}` }} />
+              ) : (
+                <Text>{m.message.image}</Text> 
+              )
+            ) : (
+              <Text>{m.message.text}</Text>
+            )}
+            <Text style={styles.time}>{moment(m.createdAt).format("HH:mm")}</Text>
           </View>
-        );
-      })}
+        ) : (
+          <View key={m._id} style={styles.friendMessage}>
+            {/* {currentFriend?.name && <Text style={styles.name}>{m.senderName}</Text>} */}
+            <Image style={styles.avatar} source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${currentFriend.image}` }} />
+            {m.message.text === "" ? (
+              imageRegex.test(m.message.image) ? (
+                <Image style={styles.image} source={{ uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${m.message.image}` }} />
+                
+              ) : (
+                console.log("URL của hình ảnh:", m.message.image),
+                <Text>{m.message.image}</Text> 
+              )
+            ) : (
+              <Text style={styles.text}>{m.message.text}</Text>
+            )}
+            <Text style={styles.time}>{moment(m.createdAt).format("HH:mm")}</Text>
+          </View>
+        )
+      ))}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
+  myMessage: {
+    alignSelf: "flex-end", // Tin nhắn của người dùng hiện tại sẽ được căn phải
+    backgroundColor: "#DCF8C6",
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
+    marginVertical: 5,
+    
+    
   },
-  messageContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 9,
-    maxWidth: "95%",
-  },
-  messageContent: {
-    maxWidth: "100%",
-  },
-  myMessageContainer: {
-    justifyContent: "flex-end",
-  },
-  friendMessageContainer: {
-    justifyContent: "flex-start",
-  },
-  messageText: {
-    borderRadius: 10,
+  friendMessage: {
+    alignSelf: "flex-start", 
+    backgroundColor: "#FFFFFF",
     padding: 10,
+    borderRadius: 20,
+    marginVertical: 5,
+    flexDirection: "row", 
+    alignItems: "baseline", 
+    maxWidth: "80%", 
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginRight: 10,
+
+  },
+  time: {
+    fontSize: 12,
+    color: "#777777",
+    marginLeft: 5, // Tạo khoảng cách giữa avatar và thời gian
+  },
+  name: {
+    fontWeight: "bold",
     marginBottom: 5,
   },
-  myMessageText: {
-    backgroundColor: "#2e86de",
-    color: "#fff",
-    alignSelf: "flex-end",
+ 
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: "cover",
+    borderRadius: 10,
+    marginVertical: 5,
   },
-  friendMessageText: {
-    backgroundColor: "#e5e5ea",
-    color: "#000",
-    alignSelf: "flex-start",
-  },
-  timestamp: {
-    fontSize: 12,
-    color: "#727272",
-    alignSelf: "flex-end",
+  text: {
+    maxWidth: "80%",
+   
+    alignItems: "center",
   },
 });
 
 export default Message;
+
+

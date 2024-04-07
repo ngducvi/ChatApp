@@ -3,8 +3,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import MessageSend from "../screens/MessageSend";
 import Message from "../screens/Message";
 import { useDispatch, useSelector } from "react-redux";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS, SIZES, FONTS } from "../constants/theme";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { getMessage, getMessageGroup, imageMessageSend, messageSend } from "../store/actions/messengerAction";
@@ -149,7 +147,7 @@ const PersonalChat = ({ navigation, route }) => {
         </View>
 
         <ScrollView style={{ flex: 1 }}>
-          <Message message={message} />
+          <Message message={message} currentFriend={currentFriend} />
         </ScrollView>
 
         <View style={{ padding: 5, marginBottom: 13 }}>
