@@ -9,7 +9,7 @@ import { getMessage, getMessageGroup, imageMessageSend, messageSend } from "../s
 import * as ImagePicker from "expo-image-picker";
 const PersonalChat = ({ navigation, route }) => {
   const dispatch = useDispatch();
-  const { message, members, messageSendSuccess, messageGetSuccess } = useSelector((state) => state.messenger);
+  const { friends, message, members, messageSendSuccess, messageGetSuccess, requestAddFriend } = useSelector((state) => state.messenger);
 
   const { friendId, friendName, friendImage, friendEmail, friendDob } = route.params;
   const { currentFriend } = route.params;
@@ -88,9 +88,10 @@ const PersonalChat = ({ navigation, route }) => {
     setNewMessage("");
   };
 
-  const handleEmojiSend = (emoji) => {
-    // Thực hiện logic xử lý việc chọn emoji
+  const handleEmojiSend = (e) => {
+    setNewMessage(`${newMessage}` + e);
   };
+  
 
   return (
     <KeyboardAvoidingView

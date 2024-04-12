@@ -140,7 +140,8 @@ const More = () => {
 
           <TouchableOpacity
             onPress={() => {
-              console.log("Pressed");
+              navigation.navigate("Addcontacts");
+              
             }}
             style={{
               flexDirection: "row",

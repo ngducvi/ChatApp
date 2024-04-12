@@ -1,19 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 
-const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, imageSend, openImagePicker }) => {
+const MessageSend = ({
+  inputHandle,
+  newMessage,
+  sendMessage,
+  handleEmojiSend,
+  imageSend,
+  openImagePicker,
+}) => {
   const [showEmoji, setShowEmoji] = useState(false);
-  const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "😝", "😜", "🧐", "🤓", "😎", "😕", "🤑", "🥴", "😱"];
+  const emojis = [
+    "😀",
+    "😃",
+    "😄",
+    "😁",
+    "😆",
+    "😅",
+    "😂",
+    "🤣",
+    "😊",
+    "😇",
+    "🙂",
+    "🙃",
+    "😉",
+    "😌",
+    "😍",
+    "😝",
+    "😜",
+    "🧐",
+    "🤓",
+    "😎",
+    "😕",
+    "🤑",
+    "🥴",
+    "😱",
+  ];
+  const newMessageRef = useRef(null); // Tham chiếu tới TextInput
 
-  // Function to handle emoji selection
-  const handleEmojiPress = (emoji) => {
-    handleEmojiSend(emoji); // Call the callback function to pass the selected emoji to the parent component
-    setNewMessage(newMessage + emoji); // Update the value of newMessage with the selected emoji
-  };
-  // const setNewMessage = (text) => {
-  //   inputHandle(text); // Call the inputHandle function to update the newMessage state
-  // };
 
   return (
     <View style={styles.messageSendSection}>
@@ -49,7 +74,10 @@ const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, im
           value={newMessage} // Display the value of newMessage in the input
           placeholder="Type a message"
         />
-        <TouchableOpacity style={styles.emoji} onPress={() => setShowEmoji(!showEmoji)}>
+        <TouchableOpacity
+          style={styles.emoji}
+          onPress={() => setShowEmoji(!showEmoji)}
+        >
           <Text>😊</Text>
         </TouchableOpacity>
       </View>
@@ -64,7 +92,7 @@ const MessageSend = ({ inputHandle, newMessage, sendMessage, handleEmojiSend, im
             {emojis.map((e) => (
               <TouchableOpacity
                 key={e} // Using emoji character as key
-                onPress={() => handleEmojiPress(e)}
+                onPress={() => handleEmojiSend(e)} // Pass 'current' as parameter
               >
                 <Text>{e}</Text>
               </TouchableOpacity>
