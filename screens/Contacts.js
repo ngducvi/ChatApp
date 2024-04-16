@@ -16,7 +16,7 @@ import {
   MaterialIcons,
   UserAddOutlined,
 } from "@expo/vector-icons";
-import { getFriends } from "../store/actions/messengerAction";
+import { getFriends, getGroups } from "../store/actions/messengerAction";
 import { API_URL } from "../environment/developer";
 import {
   FRIEND_GET_SUCCESS,
@@ -34,6 +34,17 @@ const Contacts = ({ navigation }) => {
   const { friends } = useSelector((state) => state.messenger); // Destructure friends from redux state
 
   const dispatch = useDispatch();
+
+  // Function to reload contacts
+  const reloadContacts = () => {
+    dispatch(getFriends());
+    dispatch(getGroups());
+  };
+
+  useEffect(() => {
+    // Load contacts initially
+    reloadContacts();
+  }, []);
 
   const Search = (text) => {
     setSearch(text);

@@ -12,6 +12,7 @@ import ProfileFriend from "./screens/ProfileFriend";
 import Addcontacts from "./screens/Addcontacts";
 import AddMemberGroup from "./screens/AddMemberGroup";
 import CreateGroup from "./screens/CreateGroup";
+import ProfileGroup from "./screens/ProfileGroup";
 import { Provider, useSelector } from "react-redux";
 import store from "./store/index";
 const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ export default function App() {
           <Stack.Screen name="Addcontacts" component={Addcontacts} options={{ headerShown: false }} />
           <Stack.Screen name="AddMemberGroup" component={AddMemberGroup} options={{ headerShown: false }} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} options={{ headerShown: false }} />
+          <Stack.Screen name="ProfileGroup" component={ProfileGroup} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

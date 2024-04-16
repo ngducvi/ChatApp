@@ -1,34 +1,66 @@
-import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
 import MessageSend from "../screens/MessageSend";
 import Message from "../screens/Message";
 import { useDispatch, useSelector } from "react-redux";
 import { StatusBar } from "expo-status-bar";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import { getMessage, getMessageGroup, imageMessageSend, messageSend } from "../store/actions/messengerAction";
+import {
+  getMessage,
+  getMessageGroup,
+  imageMessageSend,
+  messageSend,
+  getFriends,
+  getGroups,
+  getGroupMembers,
+} from "../store/actions/messengerAction";
 import * as ImagePicker from "expo-image-picker";
 const PersonalChat = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const { friends, message, members, messageSendSuccess, messageGetSuccess, requestAddFriend } = useSelector((state) => state.messenger);
 
-  const { friendId, friendName, friendImage, friendEmail, friendDob } = route.params;
-  const { currentFriend } = route.params;
+  const { friendId, friendName, friendImage, friendEmail, friendDob } =
+    route.params;
+  const { currentFriend, setCurrentFriend } = route.params;
   const [messages, setMessages] = useState([]);
+  const [removedGroup, setRemovedGroup] = useState("");
+  const [memberChange, setMemberChange] = useState({
+    changeStatus: false,
+    groupId: "",
+  });
   const [newMessage, setNewMessage] = useState("");
-  const { myInfo } = useSelector((state) => state.auth);
 
+  const { myInfo } = useSelector((state) => state.auth);
+ 
   useEffect(() => {
     if (currentFriend?.username) {
       dispatch(getMessage(currentFriend?._id));
     } else if (currentFriend?.name) {
       dispatch(getMessageGroup(currentFriend?._id));
+      dispatch(getGroupMembers(currentFriend?._id)); // Thêm dòng này để lấy danh sách thành viên nhóm
     }
   }, [currentFriend?._id]);
+  useEffect(() => {
+    if (memberChange.changeStatus) {
+      if (currentFriend?._id === memberChange.groupId) dispatch(getGroupMembers(currentFriend?._id));
+      setMemberChange({ changeStatus: false, groupId: "" });
+    }
+  }, [memberChange.changeStatus]);
 
   const inputHandle = (text) => {
     setNewMessage(text);
   };
 
+  const [newRequest, setNewRequest] = useState(false);
   const openImagePicker = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -87,11 +119,28 @@ const PersonalChat = ({ navigation, route }) => {
     dispatch(messageSend(data));
     setNewMessage("");
   };
-
+  const handleImagePress = () => {
+    if (currentFriend.username) {
+      navigation.navigate("ProfileFriend", { friendInfo: currentFriend });
+    } else {
+      // Chuyển đến màn hình ProfileGroup và truyền thông tin thành viên nhóm
+      navigation.navigate("ProfileGroup", { friendInfo: currentFriend, members: members});
+    }
+  };
+  
+  
+  useEffect(() => {
+    if (currentFriend?.name) {
+      dispatch(getGroupMembers(currentFriend?._id)); // Lấy danh sách thành viên nhóm
+    }
+  }, [currentFriend?._id]);
   const handleEmojiSend = (e) => {
     setNewMessage(`${newMessage}` + e);
   };
-  
+  useEffect(() => {
+    dispatch(getFriends(myInfo.id));
+    dispatch(getGroups());
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -114,19 +163,17 @@ const PersonalChat = ({ navigation, route }) => {
           }}
         >
           <View style={styles.imageContainer}>
-            <TouchableOpacity style={{ marginTop: 10 }} onPress={() => navigation.goBack()}>
-              <MaterialIcons name="keyboard-arrow-left" color="black" size={30} />
-            </TouchableOpacity>
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("ProfileFriend", {
-                  friendId: friendId,
-                  friendName: friendName,
-                  friendEmail: friendEmail,
-                  friendImage: friendImage,
-                })
-              }
+              style={{ marginTop: 10 }}
+              onPress={() => navigation.goBack()}
             >
+              <MaterialIcons
+                name="keyboard-arrow-left"
+                color="black"
+                size={30}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleImagePress()}>
               <Image
                 style={{ width: 50, height: 50, borderRadius: 50 }}
                 source={{
@@ -134,15 +181,26 @@ const PersonalChat = ({ navigation, route }) => {
                 }}
               />
             </TouchableOpacity>
-
             <View style={{ marginLeft: 10, marginTop: 5 }}>
-              <Text style={styles.nameText}>{currentFriend.username || currentFriend.name}</Text>
+              <Text style={styles.nameText}>
+                 <Text>{currentFriend.username || currentFriend.name}</Text>
+              </Text>
               <Text>Active 2m ago</Text>
             </View>
           </View>
           <View style={{ flexDirection: "row", marginTop: 13, padding: 10 }}>
-            <FontAwesome name="phone" size={24} color="black" style={{ marginRight: 20 }} />
-            <FontAwesome name="video-camera" size={24} color="black" style={{ marginRight: 10 }} />
+            <FontAwesome
+              name="phone"
+              size={24}
+              color="black"
+              style={{ marginRight: 20 }}
+            />
+            <FontAwesome
+              name="video-camera"
+              size={24}
+              color="black"
+              style={{ marginRight: 10 }}
+            />
             <FontAwesome name="wechat" size={24} color="black" />
           </View>
         </View>
@@ -152,7 +210,13 @@ const PersonalChat = ({ navigation, route }) => {
         </ScrollView>
 
         <View style={{ padding: 5, marginBottom: 13 }}>
-          <MessageSend newMessage={newMessage} inputHandle={inputHandle} sendMessage={sendMessage} handleEmojiSend={handleEmojiSend} openImagePicker={openImagePicker} />
+          <MessageSend
+            newMessage={newMessage}
+            inputHandle={inputHandle}
+            sendMessage={sendMessage}
+            handleEmojiSend={handleEmojiSend}
+            openImagePicker={openImagePicker}
+          />
         </View>
       </View>
     </KeyboardAvoidingView>

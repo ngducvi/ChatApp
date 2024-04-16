@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import removeMember from "../store/actions/messengerAction";
 import { useNavigation } from "@react-navigation/native";
 import PageContainer from "./../components/PageContainer";
 import PageTitle from "../components/PageTitle";
@@ -20,8 +21,8 @@ import {
   UserAddOutlined,
 } from "@expo/vector-icons";
 
-const ProfileFriend = ({ navigation, route }) => {
-  const { friendName, friendEmail, friendImage } = route.params;
+const ProfileFriend = ({ navigation,route }) => {
+  const { friendInfo } = route.params;
   const leaveGroup = () => {
     // Khi nhấn nút "Rời khỏi nhóm", hiển thị cửa sổ xác nhận
     Alert.alert(
@@ -47,10 +48,10 @@ const ProfileFriend = ({ navigation, route }) => {
             <Image
               style={styles.profileImage}
               source={{
-                uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${friendImage}`,
+                uri: `https://iuh-cnm-chatapp.s3.ap-southeast-1.amazonaws.com/${friendInfo.image}`,
               }}
             />
-            <Text style={styles.grouptitle}>Tên nhóm</Text>
+            <Text style={styles.grouptitle}>{friendInfo.username ? friendInfo.username : friendInfo.name}</Text>
           </View>
           <View
             style={{ flexDirection: "row", 
@@ -86,8 +87,8 @@ const ProfileFriend = ({ navigation, route }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.title}>{friendName}</Text>
-            <Text style={styles.text}>Email: {friendEmail}</Text>
+            <Text style={styles.title}></Text>
+            <Text style={styles.text}>Email:{friendInfo.email} </Text>
           </View>
         </View>
         <View style={styles.buttonContainer}>
@@ -127,10 +128,11 @@ const styles = StyleSheet.create({
   grouptitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 70,
+    marginTop: 20,
   }
 ,
   profileImage: {
+    marginTop:40, 
     width: "100%",
     height: "100%",
     borderRadius: 50,

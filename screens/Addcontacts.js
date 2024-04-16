@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getFriends,
   getRequestAddFriends,
+  acceptFriendRequest ,
 } from "../store/actions/messengerAction";
 import axios from "axios";
 import { API_URL } from "../environment/developer";
@@ -74,13 +75,29 @@ class InvitationsTab extends Component {
   }
 }
 const AcceptInvitations = () => {
+  const [newRequest, setNewRequest] = useState(false);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { requestAddFriend } = useSelector((state) => state.messenger);
+  requestAddFriend.map((item) => {
+    console.log("DS", item.username);
+  });
 
   const acceptRequestFriend = (user) => {
     dispatch(acceptFriendRequest(user._id));
+    navigation.navigate("Contacts");
   };
+  useEffect(() => {
+    // socket.current.emit("addUser", myInfo.id, myInfo);
+    dispatch(getRequestAddFriends());
+  }, []);
+
+  useEffect(() => {
+    if (newRequest) {
+      dispatch(getRequestAddFriends());
+      setNewRequest(false);
+    }
+  }, [newRequest]);
 
   const renderItem = ({ item }) => (
     <View
@@ -106,9 +123,6 @@ const AcceptInvitations = () => {
       </View>
     </View>
   );
-
- 
-
   return (
     <View>
       <View
@@ -154,12 +168,61 @@ const SearchInfo = () => {
     }
   };
 
-  const addFriend = (userId) => {
-    // Implement addFriend functionality
+  const addFriend = async (fdId) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.post(
+          `${API_URL}/api/add-friend/${fdId}`,
+          {},
+          config
+        );
+        if (response.data.success) {
+          console.log("Friend added successfully");
+          // Thêm logic xử lý khi kết bạn thành công (nếu cần)
+        } else {
+          console.log("Failed to add friend");
+          // Xử lý khi kết bạn không thành công (nếu cần)
+        }
+      } else {
+        console.log("Token not found");
+        // Xử lý khi không tìm thấy token (nếu cần)
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      // Xử lý khi có lỗi xảy ra trong quá trình gửi yêu cầu (nếu cần)
+    }
   };
 
-  const acceptRequestFriend = (user) => {
-    // Implement acceptRequestFriend functionality
+  const acceptRequestFriend = async (userId) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (token) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.post(
+          `${API_URL}/api/accept-friend-request/${userId}`,
+          {},
+          config
+        );
+        console.log(response);
+        // Thêm logic xử lý khi chấp nhận lời mời kết bạn thành công (nếu cần)
+      } else {
+        console.log("Token not found");
+        // Xử lý khi không tìm thấy token (nếu cần)
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      // Xử lý khi có lỗi xảy ra trong quá trình gửi yêu cầu (nếu cần)
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -191,9 +254,11 @@ const SearchInfo = () => {
                 <Text style={{ color: "blue", marginRight: 10 }}>Kết bạn</Text>
               </View>
             </TouchableOpacity>
-          ) : item.statusFriend === "request" ? (
-            <TouchableOpacity onPress={() => acceptRequestFriend(item)}>
-              <Text style={{ color: "blue", marginRight: 10 }}>Chấp nhận</Text>
+          ) : item.statusFriend === "pending" ? (
+            <TouchableOpacity onPress={() => acceptRequestFriend(item._id)}>
+             <View style={styles.viewtouch}>
+                <Text style={{ color: "blue", marginRight: 10 }}>Chấp nhận</Text>
+              </View>
             </TouchableOpacity>
           ) : (
             <Text style={{ color: "green", marginRight: 10 }}>Bạn bè</Text>
